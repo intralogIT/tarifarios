@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tarifario a Matriz</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="intra.png" alt="Logo" class="header-image">
+  </div>
+
+  <div class="container">
+    <div class="file-upload-container fade-in">
+      <h1>Transformar tarifario en matriz</h1>
+
+      <p style="text-align: center; color: #333; margin-bottom: 10px;">
+        Cargá el tarifario actualizado con el formato del template del botón verde de abajo.
+      </p>
+
+      <input type="file" id="tarifarioInput" accept=".xlsx" style="display: none;">
+      <label for="tarifarioInput" class="custom-upload-button"><i class="fas fa-upload"></i> Cargar Tarifario</label>
+      <span id="nombreArchivo" style="display: block; text-align: center; margin-top: 8px; color: #555;"></span>
+
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+      <button onclick="procesarExcel()"><i class="fas fa-file-export"></i> Descargar Matriz</button>
+      <br><br>
+      <button class="green-button" onclick="descargarTemplate()"><i class="fas fa-file-download"></i> Descargar Template Tarifario</button>
+      
+      <p id="mensajeDescarga" style="text-align: center; color: green; display: none; margin-top: 15px;">¡Matriz generada con éxito!</p>
+    </div>
+  </div>
+
+  <script>
+    let tarifarioWorkbook;
+    let matrizWorkbook;
+
+    document.getElementById('tarifarioInput').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      document.getElementById('nombreArchivo').textContent = `Archivo cargado: ${file.name}`;
+
+      const data = await file.arrayBuffer();
+      tarifarioWorkbook = XLSX.read(data, { type: 'array' });
+
+      const matrizData = await fetch('matriz.xlsx')
+        .then(res => res.arrayBuffer());
+      matrizWorkbook = XLSX.read(matrizData, { type: 'array' });
+    });
+
+    function procesarExcel() {
+      if (!tarifarioWorkbook || !matrizWorkbook) {
+        alert("Carga el tarifario actualizado antes con el formato del template del botón verde de abajo.");
+        return;
+      }
+
+      const hojaTarifario = tarifarioWorkbook.Sheets[tarifarioWorkbook.SheetNames[0]];
+      const hojaMatriz = matrizWorkbook.Sheets[matrizWorkbook.SheetNames[0]];
+
+      for (let i = 0; i < 10; i++) {
+        const dVal = hojaTarifario[`D${5 + i}`]?.v || 0;
+        const fVal = hojaTarifario[`F${5 + i}`]?.v || 0;
+        const eVal = hojaTarifario[`E${5 + i}`]?.v || 0;
+        const gVal = hojaTarifario[`G${5 + i}`]?.v || 0;
+
+        hojaMatriz[`H${2 + i}`]  = { t: 'n', v: Math.ceil(dVal * 1.21) };
+        hojaMatriz[`H${12 + i}`] = { t: 'n', v: Math.ceil(fVal * 1.21) };
+        hojaMatriz[`H${22 + i}`] = { t: 'n', v: Math.ceil(eVal * 1.21) };
+        hojaMatriz[`H${32 + i}`] = { t: 'n', v: Math.ceil(gVal * 1.21) };
+      }
+
+      const wbout = XLSX.write(matrizWorkbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/octet-stream' });
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Matriz Actualizada.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      const mensaje = document.getElementById('mensajeDescarga');
+      mensaje.style.display = 'block';
+      setTimeout(() => mensaje.style.display = 'none', 3000);
+    }
+
+    function descargarTemplate() {
+      const link = document.createElement('a');
+      link.href = 'tarifas.xlsx';
+      link.download = 'tarifas.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #f0f8ff;
+    color: #333;
+    line-height: 1.6;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.header-image {
+    width: 150px;
+    height: auto;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+h1 {
+    color: #cc0000;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.file-upload-container {
+    flex: 1;
+    max-width: 500px;
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Botones generales */
+button, .custom-upload-button {
+    background-color: #cc0000;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: inline-block;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+button:hover, .custom-upload-button:hover {
+    background-color: #990000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón verde */
+.green-button {
+    background-color: #28a745;
+}
+
+.green-button:hover {
+    background-color: #1e7e34;
+}
+
+/* Botón azul para subir archivo */
+.custom-upload-button {
+    background-color: #007bff;
+}
+
+.custom-upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* Animación de entrada */
+.fade-in {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .file-upload-container {
+        max-width: 100%;
+    }
+}
